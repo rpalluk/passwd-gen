@@ -6,7 +6,7 @@ namespace PasswordGen
     {
         static void Main(string[] args)
         {
-            PasswordGenerator generator = new PasswordGenerator();
+            Password generator = new Password();
 
             if (args.Length > 1)
             {

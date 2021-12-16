@@ -2,7 +2,7 @@ using System;
 
 namespace PasswordGen
 {
-    public class PasswordGenerator
+    public class Password
     {
         public enum SpecialChar { Upper, Digit, Symbol };
 
@@ -11,7 +11,7 @@ namespace PasswordGen
         private Tuple<SpecialChar, int, string>[] specialCharMaps = {
             new Tuple<SpecialChar, int, string>(SpecialChar.Upper, 0, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             new Tuple<SpecialChar, int, string>(SpecialChar.Digit, 2, "0123456789"),
-            new Tuple<SpecialChar, int, string>(SpecialChar.Symbol, 0, "!@#$%^&*()-_+=[]{}|:;<>,.?")
+            new Tuple<SpecialChar, int, string>(SpecialChar.Symbol, 0, @"!@#$%^&*_-+=|(){}[]:;"'<>,.?/")
         };
 
         private int _lenght = 8;
@@ -23,7 +23,7 @@ namespace PasswordGen
 
         public string Generate()
         {
-            char[] password = new String(' ', Lenght).ToCharArray();
+            char[] password = new char[Lenght];
 
             foreach (Tuple<SpecialChar, int, string> specialCharMap in specialCharMaps)
                 RandomizePassword(password, specialCharMap);
@@ -36,7 +36,7 @@ namespace PasswordGen
             if (specialCharMap.Item2 > 0)
             {
                 Random random = new Random();
-                int availablePositions = 0;
+                int availablePositions = GetAvailablePositions(map);
 
                 foreach (char item in map)
                 {
@@ -50,6 +50,18 @@ namespace PasswordGen
 
                 }
             }
+        }
+
+        int GetAvailablePositions(char[] item)
+        {
+            int availablePositions = 0;
+
+            foreach (char i in item)
+            {
+                if (i == '\0')
+                    availablePositions++;
+            }
+            return availablePositions;
         }
     }
 }
