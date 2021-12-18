@@ -7,8 +7,9 @@ namespace PasswordGen
         static void Main(string[] args)
         {
             Password generator = new Password();
+            Password.CharsetEnum charset;
 
-            if (args.Length > 1)
+            if (args.Length > 0)
             {
                 foreach (string argument in args)
                 {
@@ -19,7 +20,23 @@ namespace PasswordGen
                     }
                     if ((argument.Length > 2) && (argument.StartsWith("-l")))
                     {
-                        generator.Lenght=System.Convert.ToInt32(argument.Substring(2));
+                        generator.Lenght = Convert.ToInt32(argument.Substring(2));
+                    }
+
+                    if ((argument.Length > 2) && (argument.StartsWith("-u")))
+                    {
+                        charset = Password.CharsetEnum.UpperCase;
+                        generator.Tricky(Convert.ToInt32(argument.Substring(2)), charset);
+                    }
+                    if ((argument.Length > 2) && (argument.StartsWith("-d")))
+                    {
+                        charset = Password.CharsetEnum.Digits;
+                        generator.Tricky(Convert.ToInt32(argument.Substring(2)), charset);
+                    }
+                    if ((argument.Length > 2) && (argument.StartsWith("-s")))
+                    {
+                        charset = Password.CharsetEnum.Symbols;
+                        generator.Tricky(Convert.ToInt32(argument.Substring(2)), charset);
                     }
                 }
             }

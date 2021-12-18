@@ -1,18 +1,16 @@
 using System;
+using System.Text;
 
 namespace PasswordGen
 {
     public class Password
     {
-        public enum SpecialChar { Upper, Digit, Symbol };
+        public enum CharsetEnum { UpperCase, Digits, Symbols };
+
+        private Dictionary<CharsetEnum, string> charactersMap = new Dictionary<CharsetEnum, string>();
+        private Dictionary<string, int> trickyPassword;
 
         private readonly string M_NORMALS = "abcdefghijklmnopqrstuvwxyz";
-
-        private Tuple<SpecialChar, int, string>[] specialCharMaps = {
-            new Tuple<SpecialChar, int, string>(SpecialChar.Upper, 0, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-            new Tuple<SpecialChar, int, string>(SpecialChar.Digit, 2, "0123456789"),
-            new Tuple<SpecialChar, int, string>(SpecialChar.Symbol, 0, @"!@#$%^&*_-+=|(){}[]:;"'<>,.?/")
-        };
 
         private int _lenght = 8;
         public int Lenght
@@ -21,47 +19,51 @@ namespace PasswordGen
             set { _lenght = value; }
         }
 
+        public Password()
+        {
+            trickyPassword = new Dictionary<string, int>();
+
+            charactersMap.Add(CharsetEnum.UpperCase, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            charactersMap.Add(CharsetEnum.Digits, "0123456789");
+            charactersMap.Add(CharsetEnum.Symbols, @"!@#$%^&*_-+=|(){}[]:;'<>,.?/");
+        }
+
+        public void Tricky(int lenght, CharsetEnum charset)
+        {
+            trickyPassword.TryAdd(charactersMap[charset], lenght);
+        }
+
         public string Generate()
         {
-            char[] password = new char[Lenght];
+            StringBuilder result = new StringBuilder();
+            Random rand = new Random();
+            int trickyLenght = TrickyLenght(trickyPassword);
+            int position;
 
-            foreach (Tuple<SpecialChar, int, string> specialCharMap in specialCharMaps)
-                RandomizePassword(password, specialCharMap);
+            if (Lenght < trickyLenght)
+                Lenght = trickyLenght + 1;
 
-            return new string(password);
-        }
-
-        private void RandomizePassword(char[] map, Tuple<SpecialChar, int, string> specialCharMap)
-        {
-            if (specialCharMap.Item2 > 0)
+            trickyPassword.Add(M_NORMALS, Lenght - trickyLenght);
+            foreach (KeyValuePair<string, int> trick in trickyPassword)
             {
-                Random random = new Random();
-                int availablePositions = GetAvailablePositions(map);
-
-                foreach (char item in map)
+                for (int i = 0; i < trick.Value; i++)
                 {
-                    if (item != (char)specialCharMap.Item1)
-                        availablePositions++;
-                }
-
-                while (specialCharMap.Item2 > 0)
-                {
-                    int position = random.Next(availablePositions);
-
+                    position = rand.Next(result.Length);
+                    result.Insert(position, trick.Key[rand.Next(trick.Key.Length)]);
                 }
             }
+            return result.ToString();
         }
 
-        int GetAvailablePositions(char[] item)
+        private int TrickyLenght(Dictionary<string, int> trick)
         {
-            int availablePositions = 0;
+            int trickLenght = 0;
 
-            foreach (char i in item)
+            foreach (KeyValuePair<string, int> item in trick)
             {
-                if (i == '\0')
-                    availablePositions++;
+                trickLenght += item.Value;
             }
-            return availablePositions;
+            return trickLenght;
         }
     }
 }
