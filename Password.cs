@@ -5,12 +5,15 @@ namespace PasswordGen
 {
     public class Password
     {
-        public enum CharsetEnum { UpperCase, Digits, Symbols };
+        private string upperCase = "abcdefghijklmnopqrstuvwxyz";
+        private string digits = "0123456789";
+        private string symbols = @"!@#$%^&*_-+=|(){}[]:;'<>,.?/";
 
-        private Dictionary<CharsetEnum, string> charactersMap = new Dictionary<CharsetEnum, string>();
-        private Dictionary<string, int> trickyPassword;
-
-        private readonly string M_NORMALS = "abcdefghijklmnopqrstuvwxyz";
+        public enum Variations
+        {
+            Digits,
+            Symbols
+        }
 
         private int _lenght = 8;
         public int Lenght
@@ -19,23 +22,19 @@ namespace PasswordGen
             set { _lenght = value; }
         }
 
+        public bool UseUcase = true;
+
+
+
         public Password()
         {
-            trickyPassword = new Dictionary<string, int>();
 
-            charactersMap.Add(CharsetEnum.UpperCase, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            charactersMap.Add(CharsetEnum.Digits, "0123456789");
-            charactersMap.Add(CharsetEnum.Symbols, @"!@#$%^&*_-+=|(){}[]:;'<>,.?/");
-        }
-
-        public void Tricky(int lenght, CharsetEnum charset)
-        {
-            trickyPassword.TryAdd(charactersMap[charset], lenght);
         }
 
         public string Generate()
         {
             StringBuilder result = new StringBuilder();
+            /**
             Random rand = new Random();
             int trickyLenght = TrickyLenght(trickyPassword);
             int position;
@@ -52,6 +51,8 @@ namespace PasswordGen
                     result.Insert(position, trick.Key[rand.Next(trick.Key.Length)]);
                 }
             }
+            **/
+
             return result.ToString();
         }
 
